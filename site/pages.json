@@ -2,6 +2,19 @@
  "death-guard-extremis.html": {
   "author": "Kharnage",
   "category": "",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"Death Guard\"><span class=\"art\"><img class=\"plain\" src=\"assets/img/671767fc6794517a.png\"></span><span class=\"cap\">Death Guard</span></span>",
+    "<span class=\"ic\" title=\"Final battle\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM004 (3/25)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/2f28e50d46452562.png\"><img class=\"up-frame\" src=\"assets/img/deb3b9401ccf69a4.png\"></div></span><span class=\"cap\">Final battle</span></span>"
+   ],
+   [
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"adeptRetributor\" src=\"assets/img/b018c28cb1f0394f.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"adeptHospitaller\" src=\"assets/img/6d3512c432fff1b8.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"adeptCanoness\" src=\"assets/img/14e099de3549911c.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Sisterhood\" src=\"assets/img/e2be8b1b8f0a6338.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BlackTemplars\" src=\"assets/img/11e77eb7700346f5.png\">"
+   ]
+  ],
   "page": "death-guard-extremis.html",
   "recorded": 639278503613653010,
   "replays": 24,
@@ -10,6 +23,20 @@
  "kimm-quest.html": {
   "author": "",
   "category": "",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/c837205701e4b58c.png\"></span><span class=\"cap\">&nbsp;</span></span>",
+    "<span class=\"ic\" title=\"M1\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM001 (1/6)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/8c0630ccfa7c136c.png\"><img class=\"up-frame\" src=\"assets/img/deb3b9401ccf69a4.png\"></div></span><span class=\"cap\">M1</span></span>",
+    "<span class=\"ic\" title=\"L2\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgDmgL204 (3/4)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/41549eeeb1c1138a.png\"><img class=\"up-frame\" src=\"assets/img/8a3bedc849fb5b83.png\"></div></span><span class=\"cap\">L2</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"LeaguesOfVotann\" src=\"assets/img/4495057406d09a04.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Ultramarines\" src=\"assets/img/208e17e6a0f64cb6.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Tau\" src=\"assets/img/730c094eea425ad6.png\">",
+    "<span class=\"vs\">vs.</span>",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Orks\" src=\"assets/img/e2a23c87c6418c6f.png\">"
+   ]
+  ],
   "page": "kimm-quest.html",
   "recorded": 639300054999884050,
   "replays": 19,
@@ -18,6 +45,21 @@
  "nubari-quest.html": {
   "author": "",
   "category": "",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/74122dcf1e06c946.png\"></span><span class=\"cap\">&nbsp;</span></span>",
+    "<span class=\"ic\" title=\"M1\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM004 (1/6)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/2f28e50d46452562.png\"><img class=\"up-frame\" src=\"assets/img/deb3b9401ccf69a4.png\"></div></span><span class=\"cap\">M1</span></span>",
+    "<span class=\"ic\" title=\"L2\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgArmL001 (3/4)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/2f8f0784cf60bb3d.png\"><img class=\"up-frame\" src=\"assets/img/8a3bedc849fb5b83.png\"></div></span><span class=\"cap\">L2</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"AdeptusAstartes\" src=\"assets/img/058ef7cd9d4cc004.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Ultramarines\" src=\"assets/img/208e17e6a0f64cb6.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Sisterhood\" src=\"assets/img/e2be8b1b8f0a6338.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BloodAngels\" src=\"assets/img/afa793165ad6a41d.png\">",
+    "<span class=\"vs\">vs.</span>",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BlackLegion\" src=\"assets/img/73edd68506b74d76.png\">"
+   ]
+  ],
   "page": "nubari-quest.html",
   "recorded": 639281478472082540,
   "replays": 18,
@@ -26,6 +68,22 @@
  "ramus-quest.html": {
   "author": "",
   "category": "",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/3bcd121f951942e9.png\"></span><span class=\"cap\">&nbsp;</span></span>",
+    "<span class=\"ic\" title=\"M1\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM001 (1/6)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/8c0630ccfa7c136c.png\"><img class=\"up-frame\" src=\"assets/img/deb3b9401ccf69a4.png\"></div></span><span class=\"cap\">M1</span></span>",
+    "<span class=\"ic\" title=\"L2\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgDmgL001 (3/4)\"><img class=\"up-bg\" src=\"assets/img/a430a698a229d107.png\"><img class=\"up-icon\" src=\"assets/img/de1f3a6ef4020441.png\"><img class=\"up-frame\" src=\"assets/img/8a3bedc849fb5b83.png\"></div></span><span class=\"cap\">L2</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"DarkAngels\" src=\"assets/img/407947a4a45979dd.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Ultramarines\" src=\"assets/img/208e17e6a0f64cb6.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Custodes\" src=\"assets/img/e32b048ec39a1577.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"AstraMilitarum\" src=\"assets/img/f9311bc464a4c14e.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"AdeptusAstartes\" src=\"assets/img/058ef7cd9d4cc004.png\">",
+    "<span class=\"vs\">vs.</span>",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"DeathGuard\" src=\"assets/img/671767fc6794517a.png\">"
+   ]
+  ],
   "page": "ramus-quest.html",
   "recorded": 639269810325111650,
   "replays": 17,
@@ -33,10 +91,23 @@
  },
  "reanimator-m2.html": {
   "author": "",
-  "category": "Machines of War",
+  "category": "Incursion",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/a0c0b5f51d855c46.png\"></span><span class=\"cap\">&nbsp;</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BlackLegion\" src=\"assets/img/73edd68506b74d76.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"DeathGuard\" src=\"assets/img/671767fc6794517a.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"ThousandSons\" src=\"assets/img/ff27a18464f48f28.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"WorldEaters\" src=\"assets/img/28064239aa9f731a.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"EmperorsChildren\" src=\"assets/img/07da941012a65195.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"TheLostAndTheDamned\" src=\"assets/img/89c6389e9352aad1.png\">"
+   ]
+  ],
   "page": "reanimator-m2.html",
   "recorded": 639262180299058570,
   "replays": 10,
-  "title": "Reanimator Machine of War - Mythic 2"
+  "title": "Reanimator Incursion - Mythic 2"
  }
 }
