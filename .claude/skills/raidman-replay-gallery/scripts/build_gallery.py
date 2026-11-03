@@ -115,7 +115,7 @@ h1 .by{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0}
   border:1px solid #1a1a1a;color:#fff;font:700 12px/11px sans-serif;text-align:center}
 .card-head{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:12px;min-height:56px;padding-bottom:10px;border-bottom:1px solid var(--border)}
 .card-head .head-left{grid-column:1;display:flex;align-items:center;gap:12px;min-width:0}.card-head .warn{grid-column:2;justify-self:center}.card-head .reward,.card-head .reward-text{grid-column:3;justify-self:end}
-.card-title{color:var(--fg);font-size:17px;font-weight:600;text-decoration:none}
+.card-title{color:var(--fg);font-size:17px;font-weight:600;text-decoration:none;white-space:nowrap}
 .reward{position:relative;flex:none}
 .reward i{position:absolute}
 .reward.shard{width:60px;height:53px}.reward.shard>i:first-child{inset:0;width:100%;height:100%}
@@ -138,6 +138,10 @@ h1 .by{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0}
 .pic .pups i{width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
 .card.powerups{grid-column:1 / -1;border:1.5px dashed #ffc107;background:rgba(255,193,7,.06);box-shadow:0 0 14px -6px #ffc107;align-items:center;gap:12px;padding:14px 20px}
 .card.powerups:hover{box-shadow:0 0 14px -6px #ffc107}
+.token-badge{display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap;font-size:12px;font-weight:600;color:#ffc107;background:rgba(255,193,7,.1);border:1px solid #ffc107;border-radius:999px;padding:1px 10px 1px 4px}
+.token-badge i{width:20px;height:20px}
+.token-note{display:flex;align-items:center;gap:12px;margin:-8px 0 24px;padding:12px 16px;border:1.5px dashed #ffc107;border-radius:var(--radius);background:rgba(255,193,7,.06);line-height:1.5;font-size:14px}
+.token-note i{width:36px;height:36px}
 .powerups h3{margin:0;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ffc107}
 .pk-list{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 36px}
 .pk{display:flex;align-items:center;gap:10px;color:var(--fg);font-size:16px;font-weight:600}
@@ -716,7 +720,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     def powerup_name(powerup):
         return powerup.get('name') or POWERUP_TYPES.get(powerup['id'].partition('_')[0], (None, powerup['id']))[1]
 
-    def powerup_card(taken):
+    def powerup_card(taken, alt=False):
         """A card of its own between two battles: each power-up taken, an arrow, the character it went to."""
         chips = []
         for powerup in taken:
@@ -727,7 +731,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
             chips.append(f'<span class="pk" title="{html.escape(powerup_name(powerup))} to {html.escape(short_name(powerup["unit"]))}">'
                          f'{powerup_img(powerup)}{html.escape(powerup_name(powerup))}<span class="pk-arrow">\u2192</span>{who}'
                          f'{html.escape(short_name(powerup["unit"]))}</span>')
-        return f'<div class="card powerups"><h3>Power-ups taken</h3><div class="pk-list">{"".join(chips)}</div></div>'
+        return f'<div class="card powerups"><h3>Power-ups taken</h3>{token_badge if alt else ""}<div class="pk-list">{"".join(chips)}</div></div>'
 
     def unit_html(unit, rank, star_level, active_level, passive_level, rarity, held=()):
         """One unit: stars, rarity-haloed portrait, rank icon, then its two ability icons and levels. `held`: the
@@ -799,17 +803,30 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     powerups = cfg.get('powerups') or []
     node_regex = cfg.get('powerup_node_regex', r'(\d+)\s*$')
     powerup_node = lambda title: int(re.search(node_regex, title).group(1))
-    shown_nodes = [powerup_node(rows[i]['title']) for i in latest.values()] if powerups else []
-    node_number = {powerup_node(rows[i]['title']): battle_number(cfg, battles, rows[i]['title']) for i in latest.values()} if powerups else {}
+    # cfg["alt_token"] = {"replays": [csv filenames], "label"?, "note": "...", "sprite"?}: battles played on a separate token (a second
+    # run through the incursion). They are shown in order with the rest, badged, with the note above the replays; only the
+    # powerups marked {"token": "alt"} apply to them, and the others apply to the remaining battles.
+    alt_cfg = cfg.get('alt_token') or {}
+    alt_replays = set(alt_cfg.get('replays', []))
+    token_label = alt_cfg.get('label', 'Separate token')
+    token_icon = reward_sprite(alt_cfg.get('sprite', 'ui_icon_battle_token_mow.png')) if alt_cfg else None
+    token_img = f'<img src="{token_icon}" alt="">' if token_icon else ''
+    token_badge = (f'<span class="token-badge" title="{html.escape(alt_cfg.get("note", token_label))}">{token_img}{html.escape(token_label)}</span>'
+                   if alt_cfg else '')
+    token_note = (f'<div class="token-note">{token_img}<span>{html.escape(alt_cfg["note"])}</span></div>'
+                  if alt_cfg.get('note') else '')
+    shown_nodes = [(powerup_node(rows[i]['title']), rows[i]['filename'] in alt_replays) for i in latest.values()] if powerups else []
     for i in sorted(latest.values()):
         row = rows[i]
         replay_units = player_units(replays[i])
         for unit, *stats in replay_units:
             (boost_seen if row['filename'] in boost.get('replays', []) else roster_seen).setdefault(unit, []).append(stats)
         # Power-ups: one taken at node N is held for every later battle, and shown as "taken" on the first one after N.
+        alt = row['filename'] in alt_replays
         node = powerup_node(row['title']) if powerups else None
-        held = [p for p in powerups if p['node'] < node] if powerups else []
-        previous = max((n for n in shown_nodes if n < node), default=-1) if powerups else -1
+        mine = [p for p in powerups if (p.get('token') == 'alt') == alt]
+        held = [p for p in mine if p['node'] < node] if powerups else []
+        previous = max((n for n, a in shown_nodes if a == alt and n < node), default=-1) if powerups else -1
         taken = [p for p in held if p['node'] > previous]
         imgs = [unit_html(unit, *stats, held=[p for p in held if p['unit'] == unit]) for unit, *stats in replay_units]
         number = battle_number(cfg, battles, row['title'])
@@ -874,12 +891,12 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         # The title link is stretched over the whole card (see .card-title::after) so the card is clickable, while the map
         # thumbnail sits above it as its own control - a link can't contain another interactive element.
         cards.append((number, tier and tier[0], f'<div class="card{" tiered tier-%d" % tier[0] if tier else ""}">{map_toggle}'
-            f'<div class="card-head"><div class="head-left">{map_thumb}<a class="card-title" href="{html.escape(row["url"] or "#")}">{html.escape(label)}</a></div>{warning}{reward}</div>'
+            f'<div class="card-head"><div class="head-left">{map_thumb}<a class="card-title" href="{html.escape(row["url"] or "#")}">{html.escape(label)}</a>{token_badge if alt else ""}</div>{warning}{reward}</div>'
             f'<div class="body"><div class="team">{"".join(imgs)}</div>{bonuses}</div>{map_overlay}</div>'
         ))
-        # The power-ups taken since the previous displayed battle get a card of their own, between the two.
+        # The power-ups taken since the previous battle of the same run get a card of their own, just before this one.
         if taken:
-            cards.append((node_number.get(previous, number - 1) + .5, tier and tier[0], powerup_card(taken)))
+            cards.append((number - .5, tier and tier[0], powerup_card(taken, alt)))
     # The best each unit reached in any replay shown, in the order the units first appear.
     # With cfg["roster_boost"] = {"replays": [...], "label": "Super juiced"}: the roster shows each unit's normal best, and
     # for units that are better in the boosted replays, an arrow to that boosted version. Units that only appear boosted
@@ -954,7 +971,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         f'<style>{PAGE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
         f'<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
         f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{intro}</section>'
-        f'{extra_section}'
+        f'{extra_section}{token_note}'
         f'{tier_sections}</main></body></html>'
     )
     cfg['_index_icons'] = index_icon_fragments(cfg, battles, portrait_file, reward_html, reward_sprite, sprites_dir, sprite_files,

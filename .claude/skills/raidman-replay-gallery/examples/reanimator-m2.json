@@ -12,6 +12,11 @@
   "battle_index_map": {
     "MachinesOfWar nodeOrBattleIndex: 0": 0,
     "MachinesOfWar nodeOrBattleIndex: 1": 1,
+    "MachinesOfWar nodeOrBattleIndex: 8": 3,
+    "MachinesOfWar nodeOrBattleIndex: 11": 5,
+    "MachinesOfWar nodeOrBattleIndex: 18": 8,
+    "MachinesOfWar nodeOrBattleIndex: 26": 12,
+    "MachinesOfWar nodeOrBattleIndex: 29": 13,
     "MachinesOfWar nodeOrBattleIndex: 3": 2,
     "MachinesOfWar nodeOrBattleIndex: 9": 4,
     "MachinesOfWar nodeOrBattleIndex: 13": 6,
@@ -28,8 +33,15 @@
     {"id": "HitBoost_01", "unit": "deathBlightlord", "node": 4},
     {"id": "AddTrait_02", "unit": "deathRotbone", "node": 14, "name": "Rapid Assault"},
     {"id": "HitBoost_01", "unit": "emperExultant", "node": 27},
-    {"id": "HitBoost_01", "unit": "blackAbaddon", "node": 30}
+    {"id": "HitBoost_01", "unit": "blackAbaddon", "node": 30},
+    {"id": "HitBoost_01", "unit": "worldKharn", "node": 4, "token": "alt"},
+    {"id": "AddTrait_02", "unit": "deathRotbone", "node": 14, "name": "Rapid Assault", "token": "alt"}
   ],
+  "alt_token": {
+    "replays": ["4.txt", "6.txt", "9.txt", "13.txt", "14.txt"],
+    "label": "Separate token",
+    "note": "The battles marked \"Separate token\" were played on a different incursion token (a second run through the tier), in order with the others. On that token, Kh\u00e2rn got the Hit Boost and Nauseous Rotbone got Rapid Assault."
+  },
   "label": "Battle {n}",
   "index_icons": [
     {
