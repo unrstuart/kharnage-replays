@@ -134,6 +134,16 @@ h1 .by{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0}
 .abilities{margin-top:3px;display:flex;justify-content:center;gap:6px;font-size:13px;font-weight:600;color:var(--muted)}
 .ability{display:flex;flex-direction:column;align-items:center;width:34px}.ability i{width:32px;height:32px}
 .stars{display:flex;justify-content:center;width:100%;height:14px}.stars i{width:13px;height:13px}.stars i.wings{width:42px;height:15px}
+.pups{position:absolute;top:0;right:-6px;z-index:1;display:flex;flex-direction:column;gap:2px}
+.pic .pups i{width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
+.card.powerups{grid-column:1 / -1;border:1.5px dashed #ffc107;background:rgba(255,193,7,.06);box-shadow:0 0 14px -6px #ffc107;align-items:center;gap:12px;padding:14px 20px}
+.card.powerups:hover{box-shadow:0 0 14px -6px #ffc107}
+.powerups h3{margin:0;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ffc107}
+.pk-list{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 36px}
+.pk{display:flex;align-items:center;gap:10px;color:var(--fg);font-size:16px;font-weight:600}
+.pk i{width:44px;height:44px}
+.pk i.pk-unit{width:52px;height:52px;border-radius:50%}
+.pk .pk-arrow{font-size:26px;line-height:1;color:#ffc107;font-weight:700}
 .missing{width:64px;font-size:10px;word-break:break-all;color:#e88}
 .body{display:flex;flex-direction:column;gap:14px}
 .rows .grid{grid-template-columns:minmax(0,1fr)}
@@ -308,6 +318,15 @@ def load_ability_ids(gameconfig_path):
 
 
 UPGRADE_RARITIES = {'C': 'common', 'U': 'uncommon', 'R': 'rare', 'E': 'epic', 'L': 'legendary', 'M': 'mythic'}
+
+# An incursion enhancement id is <Type>_<NN> (the GameConfig's mowEvent `enhancements`): its type -> (sprite stem in
+# ui_icon_enhancement_<stem>_01.png, name shown). An AddTrait has no name of its own: give the power-up a "name" (the trait's).
+POWERUP_TYPES = {
+    'HitBoost': ('hitboost', 'Hit Boost'), 'CritBoost': ('critboost', 'Crit Boost'),
+    'DamageBoost': ('damage_boost', 'Damage Boost'), 'PierceBoost': ('pierce_boost', 'Pierce Boost'),
+    'LifeSteal': ('lifesteal', 'Life Steal'), 'Regeneration': ('regeneration', 'Regeneration'), 'Heal': ('heal', 'Heal'),
+    'Resurrect': ('resurrect', 'Resurrect'), 'Summons': ('summon', 'Summon'), 'AddTrait': ('add_trait', 'Additional Trait'),
+}
 
 
 def repo_root():
@@ -682,8 +701,37 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         missing_rewards.add(item)
         return f'<div class="reward-text" title="{tip}">{html.escape(item)}</div>'
 
-    def unit_html(unit, rank, star_level, active_level, passive_level, rarity):
-        """One unit: stars, rarity-haloed portrait, rank icon, then its two ability icons and levels."""
+    missing_powerups = set()
+
+    def powerup_img(powerup):
+        """The power-up's icon as an <img> (title = its name), or '' when the sprite isn't in the dump."""
+        kind = powerup['id'].partition('_')[0]
+        stem = POWERUP_TYPES.get(kind, (None, None))[0]
+        src = reward_sprite(powerup.get('sprite') or f'ui_icon_enhancement_{stem}_01.png')
+        if not src:
+            missing_powerups.add(powerup['id'])
+            return ''
+        return f'<img src="{src}" alt="" title="{html.escape(powerup_name(powerup))}">'
+
+    def powerup_name(powerup):
+        return powerup.get('name') or POWERUP_TYPES.get(powerup['id'].partition('_')[0], (None, powerup['id']))[1]
+
+    def powerup_card(taken):
+        """A card of its own between two battles: each power-up taken, an arrow, the character it went to."""
+        chips = []
+        for powerup in taken:
+            sprite = portrait_file(powerup['unit'])
+            portrait = reward_sprite(sprite) if sprite else None
+            who = (f'<img class="pk-unit" src="{html.escape(portrait)}" alt="" title="{html.escape(short_name(powerup["unit"]))}">'
+                   if portrait else '')
+            chips.append(f'<span class="pk" title="{html.escape(powerup_name(powerup))} to {html.escape(short_name(powerup["unit"]))}">'
+                         f'{powerup_img(powerup)}{html.escape(powerup_name(powerup))}<span class="pk-arrow">\u2192</span>{who}'
+                         f'{html.escape(short_name(powerup["unit"]))}</span>')
+        return f'<div class="card powerups"><h3>Power-ups taken</h3><div class="pk-list">{"".join(chips)}</div></div>'
+
+    def unit_html(unit, rank, star_level, active_level, passive_level, rarity, held=()):
+        """One unit: stars, rarity-haloed portrait, rank icon, then its two ability icons and levels. `held`: the
+        power-ups it carries, stacked down the portrait's right edge from the top."""
         sprite = portrait_file(unit)
         if not sprite:
             missing.add(unit)
@@ -714,7 +762,8 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
                 f'<div class="abilities">{ability_html(active_id, active_level, "active")}'
                 f'{ability_html(passive_id, passive_level, "passive")}</div>'
             )
-        return f'<div class="unit">{stars_html}<div class="pic">{portrait}{rank_html}</div>{abilities_html}</div>'
+        pups_html = f'<div class="pups">{"".join(powerup_img(p) for p in held)}</div>' if held else ''
+        return f'<div class="unit">{stars_html}<div class="pic">{portrait}{rank_html}{pups_html}</div>{abilities_html}</div>'
 
     tiers = tier_defs(cfg, battles)
     cards, missing, missing_ranks = [], set(), set()
@@ -745,12 +794,24 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         map_files = render_maps(assets_dir, out_dir, wanted, cfg.get('map_scale', 0.4))
     unit_facts = load_unit_facts(os.path.join(assets_dir, 'text_assets', 'GameConfig'))
     short_name = lambda unit: terms.get(f'Units/{unit}_ExtraShortName') or terms.get(f'Units/{unit}_ShortName') or unit
+    # cfg["powerups"] (incursions): [{"id": "HitBoost_01", "unit": "<unit id>", "node": N, "name"?, "sprite"?}, ...] - the
+    # enhancement taken at node N of the run (a replay title's number, see "powerup_node_regex") and the character it went to.
+    powerups = cfg.get('powerups') or []
+    node_regex = cfg.get('powerup_node_regex', r'(\d+)\s*$')
+    powerup_node = lambda title: int(re.search(node_regex, title).group(1))
+    shown_nodes = [powerup_node(rows[i]['title']) for i in latest.values()] if powerups else []
+    node_number = {powerup_node(rows[i]['title']): battle_number(cfg, battles, rows[i]['title']) for i in latest.values()} if powerups else {}
     for i in sorted(latest.values()):
         row = rows[i]
         replay_units = player_units(replays[i])
         for unit, *stats in replay_units:
             (boost_seen if row['filename'] in boost.get('replays', []) else roster_seen).setdefault(unit, []).append(stats)
-        imgs = [unit_html(unit, *stats) for unit, *stats in replay_units]
+        # Power-ups: one taken at node N is held for every later battle, and shown as "taken" on the first one after N.
+        node = powerup_node(row['title']) if powerups else None
+        held = [p for p in powerups if p['node'] < node] if powerups else []
+        previous = max((n for n in shown_nodes if n < node), default=-1) if powerups else -1
+        taken = [p for p in held if p['node'] > previous]
+        imgs = [unit_html(unit, *stats, held=[p for p in held if p['unit'] == unit]) for unit, *stats in replay_units]
         number = battle_number(cfg, battles, row['title'])
         source_battle = battles[source_index(cfg, row['title'])] if battles else None
         tier = tier_of(cfg, tiers, number, source_battle)
@@ -816,6 +877,9 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
             f'<div class="card-head"><div class="head-left">{map_thumb}<a class="card-title" href="{html.escape(row["url"] or "#")}">{html.escape(label)}</a></div>{warning}{reward}</div>'
             f'<div class="body"><div class="team">{"".join(imgs)}</div>{bonuses}</div>{map_overlay}</div>'
         ))
+        # The power-ups taken since the previous displayed battle get a card of their own, between the two.
+        if taken:
+            cards.append((node_number.get(previous, number - 1) + .5, tier and tier[0], powerup_card(taken)))
     # The best each unit reached in any replay shown, in the order the units first appear.
     # With cfg["roster_boost"] = {"replays": [...], "label": "Super juiced"}: the roster shows each unit's normal best, and
     # for units that are better in the boosted replays, an arrow to that boosted version. Units that only appear boosted
@@ -895,8 +959,9 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     )
     cfg['_index_icons'] = index_icon_fragments(cfg, battles, portrait_file, reward_html, reward_sprite, sprites_dir, sprite_files,
                                            os.path.join(assets_dir, 'text_assets', 'GameConfig'), out_dir)
-    cfg['_meta'] = {'replays': len(cards), 'recorded': max((recorded_at(replays[i]) for i in latest.values()), default=0)}
-    print(f'{len(cards)} replays ({skipped} earlier attempts at the same battle left out)')
+    battle_count = sum(1 for _, _, card in cards if not card.startswith('<div class="card powerups"'))
+    cfg['_meta'] = {'replays': battle_count, 'recorded': max((recorded_at(replays[i]) for i in latest.values()), default=0)}
+    print(f'{battle_count} replays ({skipped} earlier attempts at the same battle left out)')
     for warning_text in lightning_warnings:
         print('WARNING not a lightning victory:', warning_text)
     if any(not row['url'] for row in rows):
@@ -905,6 +970,8 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         print('no portrait for:', ', '.join(sorted(missing)))
     if missing_rewards:
         print('no reward icon for:', sorted(missing_rewards))
+    if missing_powerups:
+        print('no power-up icon for:', sorted(missing_powerups))
     if missing_abilities:
         print('no ability icon for:', sorted(a for a in missing_abilities if a))
     if missing_ranks:

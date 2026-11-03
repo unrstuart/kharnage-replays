@@ -24,6 +24,12 @@
   "number_keys": [
     "battleId"
   ],
+  "powerups": [
+    {"id": "HitBoost_01", "unit": "deathBlightlord", "node": 4},
+    {"id": "AddTrait_02", "unit": "deathRotbone", "node": 14, "name": "Rapid Assault"},
+    {"id": "HitBoost_01", "unit": "emperExultant", "node": 27},
+    {"id": "HitBoost_01", "unit": "blackAbaddon", "node": 30}
+  ],
   "label": "Battle {n}",
   "index_icons": [
     {
