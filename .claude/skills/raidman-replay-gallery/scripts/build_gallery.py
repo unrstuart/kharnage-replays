@@ -195,6 +195,7 @@ def objective_text(terms, objective):
 # types and factions pick their own icon from the objective's target; anything not found is simply drawn without one.
 TRAIT_ICON_OVERRIDES = {   # trait id -> sprite stem, where the sprite isn't ui_icon_trait_<snake_case>_01
     'TerminatorArmour': 'ui_icon_trait_terminator_amour_01',     # (sic) the game's own spelling
+    'MkXGravis': 'ui_icon_trait_mk_gravis_01',                    # the sprite drops the "x"
     'Psyker': 'ui_icon_trait_psychic_01',                         # inferred: no psyker-named trait icon
     'FinalJustice': 'ui_icon_uniteffect_final_vengeance',         # inferred: the trait is shown as "Final Vengeance"; no trait icon
 }
