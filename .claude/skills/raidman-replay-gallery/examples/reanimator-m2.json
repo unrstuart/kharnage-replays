@@ -35,12 +35,14 @@
     {"id": "HitBoost_01", "unit": "emperExultant", "node": 27},
     {"id": "HitBoost_01", "unit": "blackAbaddon", "node": 30},
     {"id": "HitBoost_01", "unit": "worldKharn", "node": 4, "token": "alt"},
-    {"id": "AddTrait_02", "unit": "deathRotbone", "node": 14, "name": "Rapid Assault", "token": "alt"}
+    {"id": "AddTrait_02", "unit": "deathRotbone", "node": 14, "name": "Rapid Assault", "token": "alt"},
+    {"id": "CritBoost_01", "unit": "worldKharn", "node": 23, "token": "alt"}
   ],
   "alt_token": {
     "replays": ["4.txt", "6.txt", "9.txt", "13.txt", "14.txt"],
-    "label": "Separate token",
-    "note": "The battles marked \"Separate token\" were played on a different incursion token (a second run through the tier), in order with the others. On that token, Kh\u00e2rn got the Hit Boost and Nauseous Rotbone got Rapid Assault."
+    "label": "Second token",
+    "heading": "Second token cleanup",
+    "note": "These battles were played on a second incursion token (another run through the tier) to clean up the nodes the first run skipped. On that token, Kh\u00e2rn got the Hit Boost and Nauseous Rotbone got Rapid Assault. Between Battles 9 and 13, Kh\u00e2rn also got Crit Boost."
   },
   "label": "Battle {n}",
   "index_icons": [

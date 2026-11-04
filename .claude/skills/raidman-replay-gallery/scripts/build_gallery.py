@@ -140,7 +140,10 @@ h1 .by{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0}
 .card.powerups:hover{box-shadow:0 0 14px -6px #ffc107}
 .token-badge{display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap;font-size:12px;font-weight:600;color:#ffc107;background:rgba(255,193,7,.1);border:1px solid #ffc107;border-radius:999px;padding:1px 10px 1px 4px}
 .token-badge i{width:20px;height:20px}
-.token-note{display:flex;align-items:center;gap:12px;margin:-8px 0 24px;padding:12px 16px;border:1.5px dashed #ffc107;border-radius:var(--radius);background:rgba(255,193,7,.06);line-height:1.5;font-size:14px}
+.tier.cleanup{margin-top:48px;padding-top:24px;border-top:2px dashed #ffc107}
+.tier.cleanup h2.cleanup-title{display:flex;align-items:center;gap:14px;margin:0 0 16px;font-size:30px;color:#ffc107}
+.cleanup-title i{width:48px;height:48px}
+.token-note{display:flex;align-items:center;gap:12px;margin:0 0 24px;padding:12px 16px;border:1.5px dashed #ffc107;border-radius:var(--radius);background:rgba(255,193,7,.06);line-height:1.5;font-size:14px}
 .token-note i{width:36px;height:36px}
 .powerups h3{margin:0;font-size:14px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#ffc107}
 .pk-list{display:flex;flex-wrap:wrap;justify-content:center;gap:12px 36px}
@@ -770,7 +773,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         return f'<div class="unit">{stars_html}<div class="pic">{portrait}{rank_html}{pups_html}</div>{abilities_html}</div>'
 
     tiers = tier_defs(cfg, battles)
-    cards, missing, missing_ranks = [], set(), set()
+    cards, alt_cards, missing, missing_ranks = [], [], set(), set()
     roster_seen = {}   # unit id -> [[rank, stars, active, passive, rarity], ...] over the replays shown
     boost = cfg.get('roster_boost') or {}
     lightning_warnings = []
@@ -803,18 +806,19 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     powerups = cfg.get('powerups') or []
     node_regex = cfg.get('powerup_node_regex', r'(\d+)\s*$')
     powerup_node = lambda title: int(re.search(node_regex, title).group(1))
-    # cfg["alt_token"] = {"replays": [csv filenames], "label"?, "note": "...", "sprite"?}: battles played on a separate token (a second
-    # run through the incursion). They are shown in order with the rest, badged, with the note above the replays; only the
+    # cfg["alt_token"] = {"replays": [csv filenames], "label"?, "heading"?, "note": "...", "sprite"?}: battles played on a separate token (a
+    # second run through the incursion). They come after all the others, badged, in a section of their own headed "heading" with the note; only the
     # powerups marked {"token": "alt"} apply to them, and the others apply to the remaining battles.
     alt_cfg = cfg.get('alt_token') or {}
     alt_replays = set(alt_cfg.get('replays', []))
-    token_label = alt_cfg.get('label', 'Separate token')
+    token_label = alt_cfg.get('label', 'Second token')
     token_icon = reward_sprite(alt_cfg.get('sprite', 'ui_icon_battle_token_mow.png')) if alt_cfg else None
     token_img = f'<img src="{token_icon}" alt="">' if token_icon else ''
     token_badge = (f'<span class="token-badge" title="{html.escape(alt_cfg.get("note", token_label))}">{token_img}{html.escape(token_label)}</span>'
                    if alt_cfg else '')
     token_note = (f'<div class="token-note">{token_img}<span>{html.escape(alt_cfg["note"])}</span></div>'
                   if alt_cfg.get('note') else '')
+    token_heading = alt_cfg.get('heading', token_label)
     shown_nodes = [(powerup_node(rows[i]['title']), rows[i]['filename'] in alt_replays) for i in latest.values()] if powerups else []
     for i in sorted(latest.values()):
         row = rows[i]
@@ -890,13 +894,13 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
                                f'<span class="lb-cap">{html.escape(board)} \u00b7 blue: where you deploy \u00b7 yellow: enemy spawns \u00b7 click to close</span></label>')
         # The title link is stretched over the whole card (see .card-title::after) so the card is clickable, while the map
         # thumbnail sits above it as its own control - a link can't contain another interactive element.
-        cards.append((number, tier and tier[0], f'<div class="card{" tiered tier-%d" % tier[0] if tier else ""}">{map_toggle}'
+        (alt_cards if alt else cards).append((number, tier and tier[0], f'<div class="card{" tiered tier-%d" % tier[0] if tier else ""}">{map_toggle}'
             f'<div class="card-head"><div class="head-left">{map_thumb}<a class="card-title" href="{html.escape(row["url"] or "#")}">{html.escape(label)}</a>{token_badge if alt else ""}</div>{warning}{reward}</div>'
             f'<div class="body"><div class="team">{"".join(imgs)}</div>{bonuses}</div>{map_overlay}</div>'
         ))
         # The power-ups taken since the previous battle of the same run get a card of their own, just before this one.
         if taken:
-            cards.append((number - .5, tier and tier[0], powerup_card(taken, alt)))
+            (alt_cards if alt else cards).append((number - .5, tier and tier[0], powerup_card(taken, alt)))
     # The best each unit reached in any replay shown, in the order the units first appear.
     # With cfg["roster_boost"] = {"replays": [...], "label": "Super juiced"}: the roster shows each unit's normal best, and
     # for units that are better in the boosted replays, an arrow to that boosted version. Units that only appear boosted
@@ -954,6 +958,9 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         )
     else:
         tier_sections = '<section class="tier"><div class="grid">' + ''.join(c for _, _, c in sorted(cards, key=lambda c: c[0])) + '</div></section>'
+    if alt_cards:
+        tier_sections += (f'<section class="tier cleanup"><h2 class="cleanup-title">{token_img}{html.escape(token_heading)}</h2>{token_note}<div class="grid">'
+                          + ''.join(c for _, _, c in sorted(alt_cards, key=lambda c: c[0], reverse=high_first)) + '</div></section>')
     # The halo around a portrait is its rarity's colour - the same palette as the quest tiers (Common brown ... Mythic orange).
     halo_css = ''.join(f'.halo-{i}{{border-radius:50%;box-shadow:0 0 8px 3px {color}}}' for i, (_, color) in enumerate(QUEST_TIERS))
     tier_css = ''.join(f'.tier-{i}{{--tier:{tier["color"]}}}' for i, tier in enumerate(tiers))
@@ -971,12 +978,12 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         f'<style>{PAGE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
         f'<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
         f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{intro}</section>'
-        f'{extra_section}{token_note}'
+        f'{extra_section}'
         f'{tier_sections}</main></body></html>'
     )
     cfg['_index_icons'] = index_icon_fragments(cfg, battles, portrait_file, reward_html, reward_sprite, sprites_dir, sprite_files,
                                            os.path.join(assets_dir, 'text_assets', 'GameConfig'), out_dir)
-    battle_count = sum(1 for _, _, card in cards if not card.startswith('<div class="card powerups"'))
+    battle_count = sum(1 for _, _, card in cards + alt_cards if not card.startswith('<div class="card powerups"'))
     cfg['_meta'] = {'replays': battle_count, 'recorded': max((recorded_at(replays[i]) for i in latest.values()), default=0)}
     print(f'{battle_count} replays ({skipped} earlier attempts at the same battle left out)')
     for warning_text in lightning_warnings:
