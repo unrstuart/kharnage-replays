@@ -1,0 +1,44 @@
+{
+  "title": "Blood Angels Extremis",
+  "author": "Kharnage",
+  "replays_dir": "~/src/kharnage-replays/BA CE/extremis",
+  "csv": "~/src/kharnage-replays/BA CE/extremis/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "source": {
+    "type": "campaign",
+    "id": "eventExtremis7"
+  },
+  "battle_index_regex": "_(\\d+)$",
+  "number_keys": [
+    "battleId"
+  ],
+  "label": "{title} Battle {n}",
+  "index_icons": [
+    {
+      "sprite": "ui_icon_faction_blood_angels_01.png",
+      "label": "Blood Angels"
+    },
+    {
+      "reward": {
+        "index": -1
+      },
+      "label": "Final battle"
+    },
+    {
+      "units": "required",
+      "row": 2
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "blood-angels-extremis.html",
+  "category": "Campaign Events - Extremis",
+  "not_lightning": [
+    "25.txt",
+    "26.txt"
+  ],
+  "intro": "This walkthrough is a three-medal victory against every battle, and a lightning victory against every battle, including battle 30, except battles 25 and 26. There are no challenge battles (for now)."
+}

@@ -1,0 +1,40 @@
+{
+  "title": "Blood Angels Standard",
+  "author": "Kharnage",
+  "replays_dir": "~/src/kharnage-replays/BA CE/standard",
+  "csv": "~/src/kharnage-replays/BA CE/standard/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "source": {
+    "type": "campaign",
+    "id": "eventStandard7"
+  },
+  "battle_index_regex": "_(\\d+)$",
+  "number_keys": [
+    "battleId"
+  ],
+  "label": "{title} Battle {n}",
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "blood-angels-standard.html",
+  "index_icons": [
+    {
+      "sprite": "ui_icon_faction_blood_angels_01.png",
+      "label": "Blood Angels"
+    },
+    {
+      "reward": {
+        "index": -1
+      },
+      "label": "Final battle"
+    },
+    {
+      "units": "required",
+      "row": 2
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "category": "Campaign Events - Standard",
+  "intro": "This is a full walkthrough with three-medal lightning victories in every battle. However, because the lineups include both Orks and Imperial Guard, there will be some randomness from battle fatigue and summons."
+}

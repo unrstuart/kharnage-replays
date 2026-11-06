@@ -1,7 +1,47 @@
 {
+ "blood-angels-extremis.html": {
+  "author": "Kharnage",
+  "category": "Campaign Events - Extremis",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"Blood Angels\"><span class=\"art\"><img class=\"plain\" src=\"assets/img/7066512a9b8b1ecc.png\"></span><span class=\"cap\">Blood Angels</span></span>",
+    "<span class=\"ic\" title=\"Final battle\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM003 (3/25)\"><img class=\"up-bg\" src=\"assets/img/5a5e3ca6ac6881bb.png\"><img class=\"up-icon\" src=\"assets/img/91aba1c8683677f1.png\"><img class=\"up-frame\" src=\"assets/img/15a69283f459768c.png\"></div></span><span class=\"cap\">Final battle</span></span>"
+   ],
+   [
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksNob\" src=\"assets/img/fb0ab2c399cb067a.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksRuntherd\" src=\"assets/img/7d4242c8b1aa24a2.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksWeirdboy\" src=\"assets/img/f0b522ea63de9fd4.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Orks\" src=\"assets/img/7504e7d27ca37f26.png\">"
+   ]
+  ],
+  "page": "blood-angels-extremis.html",
+  "recorded": 639310661928411650,
+  "replays": 30,
+  "title": "Blood Angels Extremis"
+ },
+ "blood-angels-standard.html": {
+  "author": "Kharnage",
+  "category": "Campaign Events - Standard",
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"Blood Angels\"><span class=\"art\"><img class=\"plain\" src=\"assets/img/7066512a9b8b1ecc.png\"></span><span class=\"cap\">Blood Angels</span></span>",
+    "<span class=\"ic\" title=\"Final battle\"><span class=\"art\"><div class=\"reward shard\" title=\"shards_bloodMephiston (2/6)\"><img src=\"assets/img/837670d29d4a24fd.png\"><img class=\"shard-portrait\" src=\"assets/img/30cfab93fb2ef331.png\"></div></span><span class=\"cap\">Final battle</span></span>"
+   ],
+   [
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksNob\" src=\"assets/img/fb0ab2c399cb067a.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksRuntherd\" src=\"assets/img/7d4242c8b1aa24a2.png\">",
+    "<img class=\"mini round\" style=\"width:28px;height:28px\" title=\"orksWeirdboy\" src=\"assets/img/f0b522ea63de9fd4.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Orks\" src=\"assets/img/7504e7d27ca37f26.png\">"
+   ]
+  ],
+  "page": "blood-angels-standard.html",
+  "recorded": 639310363925924290,
+  "replays": 33,
+  "title": "Blood Angels Standard"
+ },
  "death-guard-extremis.html": {
   "author": "Kharnage",
-  "category": "",
+  "category": "Campaign Events - Extremis",
   "icons": [
    [
     "<span class=\"ic\" title=\"Death Guard\"><span class=\"art\"><img class=\"plain\" src=\"assets/img/671767fc6794517a.png\"></span><span class=\"cap\">Death Guard</span></span>",
