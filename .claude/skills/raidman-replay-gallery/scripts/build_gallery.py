@@ -492,16 +492,24 @@ def recorded_at(data):
 
 
 def player_turns(data):
-    """How many turns the recorded player took: their EndTurnMessages + 1, since the winning turn is never ended."""
+    """A lower bound on how many turns the recorded player took. Turns that end by themselves (every unit has acted)
+    leave no EndTurnMessage, so EndTurnMessages + 1 undercounts. A unit moves at most once a turn, so between two
+    EndTurnMessages there were at least as many turns as the most any one unit moved."""
     me = set(data.get('RecordedPlayerIds') or [])
-    ended = 0
+    segments = [{}]
     for message in data['Messages']:
         raw = message['Message'].get('MessageJson')
-        if raw and '"EndTurnMessage"' in raw:
+        if not raw:
+            continue
+        if '"MoveUnitMessage"' in raw:
+            body = json.loads(raw)
+            if body.get('Name') == 'MoveUnitMessage':
+                segments[-1][body['UnitId']] = segments[-1].get(body['UnitId'], 0) + 1
+        elif '"EndTurnMessage"' in raw:
             body = json.loads(raw)
             if body.get('Name') == 'EndTurnMessage' and body.get('PlayerId') in me:
-                ended += 1
-    return ended + 1
+                segments.append({})
+    return sum(max([1] + list(moves.values())) for moves in segments)
 
 
 def player_units(data):
@@ -839,8 +847,18 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         tier = tier_of(cfg, tiers, number, source_battle)
         chance_of = battles and battles[source_index(cfg, row['title'])].get('loot', {}).get('chanceOf')
         reward = reward_html(chance_of) if chance_of else ''
+        # Bonus/challenge battles (campaign ids like 03B) show as "<title> Challenge 3B" and sort just after battle 3.
+        suffix = ''
+        if source_battle and battles:
+            for key in cfg.get('number_keys', ['battleNr', 'battleId']):
+                found = re.match(r'\d+([A-Za-z]+)$', str(source_battle.get(key, '')))
+                if found:
+                    suffix = found.group(1).upper()
+                    break
         label = cfg.get('label', '{title} Battle {n}').format(
-            title=cfg['title'], n=number, tier=(tier[1].get('name') or '') if tier else '', k=(source_battle or {}).get('_pos', number))
+            title=cfg['title'], n=f'{number}{suffix}', tier=(tier[1].get('name') or '') if tier else '', k=(source_battle or {}).get('_pos', number))
+        if suffix:
+            label = f"{cfg['title']} Challenge {number}{suffix}"
         if row['filename'] in variants:
             label += f' ({variants[row["filename"]]})'
         # A battle's `lightningVictory` is the most player turns a lightning victory allows (quests have it; assumed to count
@@ -881,6 +899,9 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
                 tip = '; '.join(f'{name}: {who}' for name, who in unmet)
                 warning = (f'<span class="warn" title="{html.escape(tip)}">\u26a0 '
                            f'{len(unmet)} bonus{"es" if len(unmet) > 1 else ""} not met</span>')
+        if row['filename'] in cfg.get('not_lightning', []):
+            # Flagged by the user in the config (what the replay's own turn count shows is reported separately above).
+            warning += '<span class="warn" title="Not a lightning victory">\u26a0 Not a lightning victory</span>'
         map_toggle = map_thumb = map_overlay = ''
         if source_battle:
             board = source_battle.get('BoardId') or source_battle.get('boardId')
@@ -895,7 +916,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
                                f'<span class="lb-cap">{html.escape(board)} \u00b7 blue: where you deploy \u00b7 yellow: enemy spawns \u00b7 click to close</span></label>')
         # The title link is stretched over the whole card (see .card-title::after) so the card is clickable, while the map
         # thumbnail sits above it as its own control - a link can't contain another interactive element.
-        (alt_cards if alt else cards).append((number, tier and tier[0], f'<div class="card{" tiered tier-%d" % tier[0] if tier else ""}">{map_toggle}'
+        (alt_cards if alt else cards).append((number + (.25 if suffix else 0), tier and tier[0], f'<div class="card{" tiered tier-%d" % tier[0] if tier else ""}">{map_toggle}'
             f'<div class="card-head"><div class="head-left">{map_thumb}<a class="card-title" href="{html.escape(row["url"] or "#")}">{html.escape(label)}</a>{token_badge if alt else ""}</div>{warning}{reward}</div>'
             f'<div class="body"><div class="team">{"".join(imgs)}</div>{bonuses}</div>{map_overlay}</div>'
         ))

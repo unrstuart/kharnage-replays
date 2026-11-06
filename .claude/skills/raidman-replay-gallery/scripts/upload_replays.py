@@ -8,6 +8,8 @@ sent. With --upload each file is POSTed to the site's replay API and the CSV get
 up UNLISTED (no guild tag) unless --guild-tag is given. They are public to anyone with the link and cannot be
 taken back, so only run --upload after the user has said which files and which mode.
 
+Uploads are refused while an EMBARGO marker exists (<repo>/.git/EMBARGO or ~/src/datamine_tacticus/EMBARGO).
+
 Re-uploading the same file is harmless: the server answers with the same hash and alreadyUploaded=true.
 """
 import base64
@@ -26,6 +28,18 @@ DEFAULT_API = 'https://7kirvdjwrfibcitmtpgfcj4tei0supic.lambda-url.ap-southeast-
 SITE = 'https://tacticus-raidman.com'
 
 
+def embargo_markers():
+    """Embargo marker files that block uploads: <repo>/.git/EMBARGO (this repo) and ~/src/datamine_tacticus/EMBARGO."""
+    markers = [os.path.expanduser('~/src/datamine_tacticus/EMBARGO')]
+    here = os.path.dirname(os.path.abspath(__file__))
+    while here != os.path.dirname(here):
+        if os.path.isdir(os.path.join(here, '.git')):
+            markers.append(os.path.join(here, '.git', 'EMBARGO'))
+            break
+        here = os.path.dirname(here)
+    return [m for m in markers if os.path.isfile(m)]
+
+
 def decode(text):
     return json.loads(gzip.decompress(base64.b64decode(text)))
 
@@ -42,6 +56,10 @@ def main(argv):
         sys.exit(__doc__)
     replays_dir, out_csv = os.path.expanduser(args[0]), os.path.expanduser(args[1])
     upload = '--upload' in flags
+    if upload and (blocked := embargo_markers()):
+        for marker in blocked:
+            print(f'UPLOAD BLOCKED (embargo, {marker}):\n  ' + open(marker).read().strip(), file=sys.stderr)
+        sys.exit('Nothing was sent. Remove the marker once the build is public.')
     api = (flags.get('--api') or DEFAULT_API).rstrip('/')
     files = sorted(glob.glob(os.path.join(replays_dir, '*.txt')))
     if not files:
