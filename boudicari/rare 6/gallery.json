@@ -1,0 +1,83 @@
+{
+  "title": "Boudicari Incursion - Rare Tier 6",
+  "author": "Kharnage",
+  "intro": "This is a raidable path through the incursion, not a full clear.",
+  "replays_dir": "~/src/kharnage-replays/boudicari/rare 6",
+  "csv": "~/src/kharnage-replays/boudicari/rare 6/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "mow_event",
+    "id": "custoDreadnought",
+    "tier": 5
+  },
+  "battle_index_map": {
+    "MachinesOfWar nodeOrBattleIndex: 0": 0,
+    "MachinesOfWar nodeOrBattleIndex: 11": 4,
+    "MachinesOfWar nodeOrBattleIndex: 12": 5,
+    "MachinesOfWar nodeOrBattleIndex: 16": 7,
+    "MachinesOfWar nodeOrBattleIndex: 18": 9,
+    "MachinesOfWar nodeOrBattleIndex: 28": 12,
+    "MachinesOfWar nodeOrBattleIndex: 31": 14
+  },
+  "number_keys": [
+    "battleId"
+  ],
+  "powerups": [
+    {
+      "id": "CritBoost_01",
+      "unit": "blackPossession",
+      "node": 2
+    },
+    {
+      "id": "Summons_07",
+      "node": 5,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Summons_07",
+      "node": 8,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "DamageBoost_01",
+      "unit": "blackPossession",
+      "node": 14
+    },
+    {
+      "id": "Summons_07",
+      "node": 19,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Resurrect_01",
+      "node": 23
+    },
+    {
+      "id": "DamageBoost_01",
+      "unit": "blackHaarken",
+      "node": 26
+    },
+    {
+      "id": "CritBoost_01",
+      "unit": "thousInfernalMaster",
+      "node": 30
+    }
+  ],
+  "label": "Battle {n}",
+  "index_icons": [
+    {
+      "unit": "custoDreadnought"
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "boudicari-rare-6.html",
+  "category": "Incursion",
+  "group": "Boudicari Incursion",
+  "group_label": "Rare Tier 6",
+  "group_order": 6
+}

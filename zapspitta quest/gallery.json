@@ -1,0 +1,74 @@
+{
+  "title": "Zapspitta Quest",
+  "replays_dir": "~/src/kharnage-replays/zapspitta quest",
+  "csv": "~/src/kharnage-replays/zapspitta quest/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "linear_hero_event",
+    "id": "linear_hero_event_1"
+  },
+  "battle_index_regex": "_(\\d+)$",
+  "battle_index_offset": -1,
+  "number_keys": [
+    "battleNr"
+  ],
+  "label": "{tier} {k}",
+  "tiers": "quest",
+  "index_icons": [
+    {
+      "unit": "orksWeirdboy"
+    },
+    {
+      "reward": {
+        "tier": 5,
+        "pos": 1
+      },
+      "label": "M1"
+    },
+    {
+      "reward": {
+        "tier": 4,
+        "pos": 2
+      },
+      "label": "L2"
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    },
+    {
+      "text": "vs.",
+      "row": 2
+    },
+    {
+      "factions": "enemy",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "zapspitta-quest.html",
+  "author": "Kharnage",
+  "variant_labels": {
+    "m1.txt": "100%",
+    "m1_461.txt": "461 out of 500"
+  },
+  "notice": {
+    "icon": "SE_Currency_november_2026.png",
+    "before": "The characters shown will get you to the penultimate crate, letting you claim all of the ",
+    "highlight": "Skull Harvest",
+    "color": "#d9432b",
+    "after": " currency."
+  },
+  "roster_top": {
+    "replays": [
+      "m1.txt",
+      "l1.txt",
+      "l2.txt"
+    ],
+    "text": "This is a 100% playthrough. A playthrough that gets you to the penultimate crate is shown as well, with its characters below."
+  },
+  "bonuses_confirmed": [
+    "l2.txt"
+  ]
+}

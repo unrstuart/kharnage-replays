@@ -1,0 +1,119 @@
+{
+  "title": "Boudicari Incursion - Legendary Tier 12",
+  "author": "Kharnage",
+  "intro": "This is a full clear of the incursion, done over two tokens. The second token's replays are below the first playthrough.",
+  "replays_dir": "~/src/kharnage-replays/boudicari/leg 12",
+  "csv": "~/src/kharnage-replays/boudicari/leg 12/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "mow_event",
+    "id": "custoDreadnought",
+    "tier": 11
+  },
+  "battle_index_map": {
+    "MachinesOfWar nodeOrBattleIndex: 0": 0,
+    "MachinesOfWar nodeOrBattleIndex: 10": 3,
+    "MachinesOfWar nodeOrBattleIndex: 12": 5,
+    "MachinesOfWar nodeOrBattleIndex: 16": 7,
+    "MachinesOfWar nodeOrBattleIndex: 18": 9,
+    "MachinesOfWar nodeOrBattleIndex: 28": 12,
+    "MachinesOfWar nodeOrBattleIndex: 31": 14,
+    "MachinesOfWar nodeOrBattleIndex: 22": 10,
+    "MachinesOfWar nodeOrBattleIndex: 1": 1,
+    "MachinesOfWar nodeOrBattleIndex: 13": 6,
+    "MachinesOfWar nodeOrBattleIndex: 25": 11,
+    "MachinesOfWar nodeOrBattleIndex: 4": 2,
+    "MachinesOfWar nodeOrBattleIndex: 29": 13,
+    "MachinesOfWar nodeOrBattleIndex: 11": 4,
+    "MachinesOfWar nodeOrBattleIndex: 17": 8
+  },
+  "number_keys": [
+    "battleId"
+  ],
+  "powerups": [
+    {
+      "id": "DamageBoost_01",
+      "unit": "blackAbaddon",
+      "node": 2
+    },
+    {
+      "id": "Summons_07",
+      "node": 5,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Summons_07",
+      "node": 8,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Resurrect_01",
+      "node": 14
+    },
+    {
+      "id": "CritReduction_01",
+      "unit": "worldKharn",
+      "node": 19
+    },
+    {
+      "id": "CritBoost_01",
+      "unit": "worldKharn",
+      "node": 23
+    },
+    {
+      "id": "Summons_07",
+      "node": 26,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "CritBoost_01",
+      "unit": "blackAbaddon",
+      "node": 30
+    },
+    {
+      "id": "CritReduction_01",
+      "unit": "worldKharn",
+      "node": 9,
+      "token": "alt"
+    },
+    {
+      "id": "CritReduction_01",
+      "unit": "blackAbaddon",
+      "node": 19,
+      "token": "alt"
+    }
+  ],
+  "label": "Battle {n}",
+  "index_icons": [
+    {
+      "unit": "custoDreadnought"
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "boudicari-legendary-12.html",
+  "category": "Incursion",
+  "alt_token": {
+    "replays": [
+      "2.txt",
+      "3.txt",
+      "5.txt",
+      "7.txt",
+      "9.txt",
+      "11.txt",
+      "12.txt",
+      "14.txt"
+    ],
+    "label": "Second token",
+    "heading": "Second token",
+    "note": "These battles were played on a second incursion token. On that token, Kh\u00e2rn got a Crit Reduction, then Abaddon got one.",
+    "badges": false
+  },
+  "group": "Boudicari Incursion",
+  "group_label": "Legendary Tier 12",
+  "group_order": 12
+}

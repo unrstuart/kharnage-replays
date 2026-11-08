@@ -1,0 +1,114 @@
+{
+  "title": "Boudicari Incursion - Mythic Tier 14 (The Book Club)",
+  "author": "Kharnage",
+  "replays_dir": "~/src/kharnage-replays/boudicari/mythic 14 book club",
+  "csv": "~/src/kharnage-replays/boudicari/mythic 14 book club/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "mow_event",
+    "id": "custoDreadnought",
+    "tier": 13
+  },
+  "battle_index_map": {
+    "MachinesOfWar nodeOrBattleIndex: 0": 0,
+    "MachinesOfWar nodeOrBattleIndex: 10": 3,
+    "MachinesOfWar nodeOrBattleIndex: 12": 5,
+    "MachinesOfWar nodeOrBattleIndex: 17": 8,
+    "MachinesOfWar nodeOrBattleIndex: 18": 9,
+    "MachinesOfWar nodeOrBattleIndex: 28": 12,
+    "MachinesOfWar nodeOrBattleIndex: 31": 14,
+    "MachinesOfWar nodeOrBattleIndex: 1": 1,
+    "MachinesOfWar nodeOrBattleIndex: 4": 2,
+    "MachinesOfWar nodeOrBattleIndex: 11": 4,
+    "MachinesOfWar nodeOrBattleIndex: 13": 6,
+    "MachinesOfWar nodeOrBattleIndex: 16": 7,
+    "MachinesOfWar nodeOrBattleIndex: 22": 10,
+    "MachinesOfWar nodeOrBattleIndex: 25": 11,
+    "MachinesOfWar nodeOrBattleIndex: 29": 13
+  },
+  "number_keys": [
+    "battleId"
+  ],
+  "powerups": [
+    {
+      "id": "CritBoost_01",
+      "unit": "blackPossession",
+      "node": 2
+    },
+    {
+      "id": "Summons_07",
+      "node": 5,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Summons_07",
+      "node": 8,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "DamageBoost_01",
+      "unit": "blackPossession",
+      "node": 14
+    },
+    {
+      "id": "Resurrect_01",
+      "node": 23
+    },
+    {
+      "id": "DamageBoost_01",
+      "unit": "thousAhriman",
+      "node": 26
+    },
+    {
+      "id": "CritBoost_01",
+      "unit": "thousAhriman",
+      "node": 30
+    },
+    {
+      "id": "Summons_07",
+      "node": 8,
+      "name": "Summon: Pink Horrors",
+      "token": "alt"
+    },
+    {
+      "id": "Summons_07",
+      "node": 19,
+      "name": "Summon: Pink Horrors",
+      "token": "alt"
+    }
+  ],
+  "label": "Battle {n}",
+  "index_icons": [
+    {
+      "unit": "custoDreadnought"
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "boudicari-mythic-14-book-club.html",
+  "category": "Incursion",
+  "group": "Boudicari Incursion",
+  "group_label": "The Book Club",
+  "group_order": 15,
+  "alt_token": {
+    "replays": [
+      "MachinesOfWarEvent-10.12.2026-1146.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1152.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1158.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1159.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1203.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1205.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1207.replay.txt",
+      "MachinesOfWarEvent-10.12.2026-1209.replay.txt"
+    ],
+    "label": "Second token",
+    "heading": "Second token",
+    "badges": false,
+    "note": "These battles were played on a second incursion token. On that token, the party took Summon: Pink Horrors twice."
+  },
+  "intro": "This run uses two tokens. The second token's replays are below the first playthrough."
+}

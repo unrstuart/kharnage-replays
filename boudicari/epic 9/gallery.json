@@ -1,0 +1,79 @@
+{
+  "title": "Boudicari Incursion - Epic Tier 9",
+  "author": "Kharnage",
+  "intro": "This is a raidable path through the incursion, not a full clear.",
+  "replays_dir": "~/src/kharnage-replays/boudicari/epic 9",
+  "csv": "~/src/kharnage-replays/boudicari/epic 9/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "mow_event",
+    "id": "custoDreadnought",
+    "tier": 8
+  },
+  "battle_index_map": {
+    "MachinesOfWar nodeOrBattleIndex: 0": 0,
+    "MachinesOfWar nodeOrBattleIndex: 10": 3,
+    "MachinesOfWar nodeOrBattleIndex: 12": 5,
+    "MachinesOfWar nodeOrBattleIndex: 16": 7,
+    "MachinesOfWar nodeOrBattleIndex: 18": 9,
+    "MachinesOfWar nodeOrBattleIndex: 28": 12,
+    "MachinesOfWar nodeOrBattleIndex: 29": 13,
+    "MachinesOfWar nodeOrBattleIndex: 31": 14
+  },
+  "number_keys": [
+    "battleId"
+  ],
+  "powerups": [
+    {
+      "id": "DamageBoost_01",
+      "unit": "worldKharn",
+      "node": 2
+    },
+    {
+      "id": "Summons_07",
+      "node": 5,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Summons_07",
+      "node": 8,
+      "name": "Summon: Pink Horrors"
+    },
+    {
+      "id": "Resurrect_01",
+      "node": 14
+    },
+    {
+      "id": "CritReduction_01",
+      "unit": "worldKharn",
+      "node": 19
+    },
+    {
+      "id": "CritBoost_01",
+      "unit": "worldKharn",
+      "node": 23
+    },
+    {
+      "id": "Summons_07",
+      "node": 26,
+      "name": "Summon: Pink Horrors"
+    }
+  ],
+  "label": "Battle {n}",
+  "index_icons": [
+    {
+      "unit": "custoDreadnought"
+    },
+    {
+      "factions": "playable",
+      "row": 2
+    }
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "boudicari-epic-9.html",
+  "category": "Incursion",
+  "group": "Boudicari Incursion",
+  "group_label": "Epic Tier 9",
+  "group_order": 9
+}
