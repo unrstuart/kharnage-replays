@@ -61,6 +61,12 @@ def star_icons(star_level):
 
 # Look borrowed from tacticus-raidman.com's own theme tokens (dark zinc surfaces, faint white borders, blue accent,
 # Chakra Petch), read from its stylesheet - not from the rendered page.
+NOTICE_CSS = (".notice{margin:12px 0 0;max-width:960px;text-align:center;line-height:1.55;font-size:15px}"
+              ".notice .hl{font-weight:700;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}"
+              ".notice i{display:inline-block;width:24px;height:20px;margin-right:5px;vertical-align:-4px;"
+              "background-size:contain;background-repeat:no-repeat;background-position:center}")
+
+
 PAGE_CSS = """
 :root{--bg:oklch(14.1% .005 285.8);--card:oklch(21% .006 285.9);--border:oklch(100% 0 0/.1);--fg:oklch(98.5% 0 0);
   --muted:oklch(70.5% .015 286);--accent:oklch(70% .17 255);--radius:.625rem}
@@ -333,7 +339,7 @@ POWERUP_TYPES = {
     'HitBoost': ('hitboost', 'Hit Boost'), 'CritBoost': ('critboost', 'Crit Boost'),
     'DamageBoost': ('damage_boost', 'Damage Boost'), 'PierceBoost': ('pierce_boost', 'Pierce Boost'),
     'LifeSteal': ('lifesteal', 'Life Steal'), 'Regeneration': ('regeneration', 'Regeneration'), 'Heal': ('heal', 'Heal'),
-    'Resurrect': ('resurrect', 'Resurrect'), 'Summons': ('summon', 'Summon'), 'AddTrait': ('add_trait', 'Additional Trait'),
+    'CritReduction': ('critreduction', 'Crit Reduction'), 'Resurrect': ('resurrect', 'Resurrect'), 'Summons': ('summon', 'Summon'), 'AddTrait': ('add_trait', 'Additional Trait'),
 }
 
 
@@ -492,9 +498,14 @@ def recorded_at(data):
 
 
 def player_turns(data):
-    """A lower bound on how many turns the recorded player took. Turns that end by themselves (every unit has acted)
-    leave no EndTurnMessage, so EndTurnMessages + 1 undercounts. A unit moves at most once a turn, so between two
-    EndTurnMessages there were at least as many turns as the most any one unit moved."""
+    """How many turns the recorded player took. The event stream carries a counter, `Match_AmountOfTurnsStartedByCurrentPlayer`;
+    its highest value is exact (it flagged exactly the two BA Extremis battles the game marked as misses). If a replay
+    lacks it, fall back to a lower bound: turns that end by themselves leave no EndTurnMessage, but a unit moves at most
+    once a turn, so between two EndTurnMessages there were at least as many turns as the most any one unit moved."""
+    counts = [int(c) for message in data['Messages'] for c in re.findall(
+        r'Match_AmountOfTurnsStartedByCurrentPlayer:(\d+)', json.dumps(message.get('OutputStream') or ''))]
+    if counts:
+        return max(counts)
     me = set(data.get('RecordedPlayerIds') or [])
     segments = [{}]
     for message in data['Messages']:
@@ -736,6 +747,9 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         """A card of its own between two battles: each power-up taken, an arrow, the character it went to."""
         chips = []
         for powerup in taken:
+            if not powerup.get('unit'):   # a party-wide power-up (a summon, a resurrect): no character to point at
+                chips.append(f'<span class="pk" title="{html.escape(powerup_name(powerup))}">{powerup_img(powerup)}{html.escape(powerup_name(powerup))}</span>')
+                continue
             sprite = portrait_file(powerup['unit'])
             portrait = reward_sprite(sprite) if sprite else None
             who = (f'<img class="pk-unit" src="{html.escape(portrait)}" alt="" title="{html.escape(short_name(powerup["unit"]))}">'
@@ -787,6 +801,8 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     boost = cfg.get('roster_boost') or {}
     lightning_warnings = []
     boost_seen = {}    # same, over the replays named in cfg['roster_boost']['replays'] (kept out of roster_seen)
+    top = cfg.get('roster_top') or {}   # {"replays": [...], "text": "..."}: those replays' characters get a box above the main roster
+    top_seen = {}
     with open(csv_path, newline='') as f:
         rows = list(csv.DictReader(f))
     replays = [load_replay(os.path.join(replays_dir, row['filename'])) for row in rows]
@@ -824,7 +840,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     token_icon = reward_sprite(alt_cfg.get('sprite', 'ui_icon_battle_token_mow.png')) if alt_cfg else None
     token_img = f'<img src="{token_icon}" alt="">' if token_icon else ''
     token_badge = (f'<span class="token-badge" title="{html.escape(alt_cfg.get("note", token_label))}">{token_img}{html.escape(token_label)}</span>'
-                   if alt_cfg else '')
+                   if alt_cfg and alt_cfg.get('badges', True) else '')
     token_note = (f'<div class="token-note">{token_img}<span>{html.escape(alt_cfg["note"])}</span></div>'
                   if alt_cfg.get('note') else '')
     token_heading = alt_cfg.get('heading', token_label)
@@ -833,7 +849,10 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         row = rows[i]
         replay_units = player_units(replays[i])
         for unit, *stats in replay_units:
-            (boost_seen if row['filename'] in boost.get('replays', []) else roster_seen).setdefault(unit, []).append(stats)
+            if row['filename'] in top.get('replays', []):
+                top_seen.setdefault(unit, []).append(stats)
+            else:
+                (boost_seen if row['filename'] in boost.get('replays', []) else roster_seen).setdefault(unit, []).append(stats)
         # Power-ups: one taken at node N is held for every later battle, and shown as "taken" on the first one after N.
         alt = row['filename'] in alt_replays
         node = powerup_node(row['title']) if powerups else None
@@ -841,7 +860,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         held = [p for p in mine if p['node'] < node] if powerups else []
         previous = max((n for n, a in shown_nodes if a == alt and n < node), default=-1) if powerups else -1
         taken = [p for p in held if p['node'] > previous]
-        imgs = [unit_html(unit, *stats, held=[p for p in held if p['unit'] == unit]) for unit, *stats in replay_units]
+        imgs = [unit_html(unit, *stats, held=[p for p in held if p.get('unit') == unit]) for unit, *stats in replay_units]
         number = battle_number(cfg, battles, row['title'])
         source_battle = battles[source_index(cfg, row['title'])] if battles else None
         tier = tier_of(cfg, tiers, number, source_battle)
@@ -878,6 +897,8 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
             for objective in source_battle['Objectives']:
                 name, description = objective_text(terms, objective)
                 status, violators = check_objective(objective, lineup, unit_facts)
+                if status == 'unmet' and row['filename'] in cfg.get('bonuses_confirmed', []):
+                    status, violators = 'met', []   # the user saw the game award it: the static unit-facts check is stricter than the game
                 sprite, restriction = objective_icon(sprite_files, objective)
                 if sprite:
                     shutil.copyfile(os.path.join(sprites_dir, sprite), os.path.join(out_dir, 'bonuses', sprite))
@@ -966,6 +987,8 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     roster_note = ''
     if boost_seen and arrows:
         roster_note = f'<p class="roster-note">\u2192 points to the {html.escape(boost_label.lower())} version of a character</p>'
+    top_section = (f'<section class="roster top"><div class="team">{"".join(unit_html(u, *best_of(r)) for u, r in top_seen.items())}</div>'
+                   + (f'<p class="intro">{html.escape(top["text"])}</p>' if top.get('text') else '') + '</section>') if top_seen else ''
     extra_section = (f'<section class="roster extra"><div class="team">{"".join(extra_parts)}</div>'
                      f'<p class="roster-note">{html.escape(extra.get("label", ""))}</p></section>') if extra_parts else ''
     high_first = descending(cfg)
@@ -992,14 +1015,27 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
              f'<span class="promo-code" title="Click to select, then copy">{html.escape(cfg["promo_code"])}</span>'
              + (f'<span class="promo-note">{html.escape(cfg["promo_note"])}</span>' if cfg.get('promo_note') else '') + '</div>') if cfg.get('promo_code') else ''
     intro = f'<p class="intro">{html.escape(cfg["intro"])}</p>' if cfg.get('intro') else ''
+    # cfg["notice"]: a line under the character summary, {"icon"?: sprite, "before"?, "highlight"?, "color"?, "after"?}; the highlighted
+    # words are underlined and coloured, and the sprite (from the dump) comes before the text.
+    notice = ''
+    if cfg.get('notice'):
+        n = cfg['notice']
+        icon_src = reward_sprite(n['icon']) if n.get('icon') else None
+        if n.get('icon') and not icon_src:
+            print('no sprite for notice icon:', n['icon'])
+        icon = f'<img src="{icon_src}" alt="">' if icon_src else ''
+        mark = (f'<span class="hl" style="color:{html.escape(n.get("color", "#ffc107"))}">{icon}{html.escape(n["highlight"])}</span>'
+                if n.get('highlight') else icon)
+        notice = f'<p class="notice">{html.escape(n.get("before", ""))}{mark}{html.escape(n.get("after", ""))}</p>'
     page = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>{page_title}</title>'
         '<link rel="preconnect" href="https://fonts.googleapis.com">'
         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap">'
-        f'<style>{PAGE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
+        f'<style>{PAGE_CSS}{NOTICE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
         f'<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
-        f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{intro}</section>'
+        f'{top_section}'
+        f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{notice}{intro}</section>'
         f'{extra_section}'
         f'{tier_sections}</main></body></html>'
     )
@@ -1148,7 +1184,8 @@ def update_site_index(site_dir, cfg):
     meta = cfg.get('_meta', {})
     pages[cfg['page']] = {'page': cfg['page'], 'title': cfg['title'], 'author': cfg.get('author', ''),
                           'category': cfg.get('category', ''), 'replays': meta.get('replays', 0), 'recorded': meta.get('recorded', 0),
-                          'icons': cfg.get('_index_icons', [])}
+                          'icons': cfg.get('_index_icons', []),
+                          'group': cfg.get('group', ''), 'group_label': cfg.get('group_label', ''), 'group_order': cfg.get('group_order', 0)}
     with open(path, 'w') as f:
         json.dump(pages, f, indent=1, sort_keys=True)
     write_site_index(site_dir)
@@ -1163,18 +1200,44 @@ def write_site_index(site_dir):
     headings = sorted({page_category(p) for p in pages}, key=lambda h: (order.index(h) if h in order else len(order), h))
     sections = []
     for heading in headings:
-        cards = ''.join(
-            f'<a class="entry" href="{html.escape(p["page"])}"><span class="name">{html.escape(p["title"])}</span>'
-            + (f'<span class="by">by {html.escape(p["author"])}</span>' if p.get('author') else '')
-            + f'<span class="count">{p["replays"]} replays</span>'
-            + ''.join(f'<span class="icons{" row2" if n else ""}">{"".join(row)}</span>' for n, row in enumerate(p.get('icons', [])) if row) + '</a>'
-            for p in sorted((p for p in pages if page_category(p) == heading), key=lambda p: p['recorded'], reverse=True))
+        def icon_rows(p):
+            return ''.join(f'<span class="icons{" row2" if n else ""}">{"".join(row)}</span>' for n, row in enumerate(p.get('icons', [])) if row)
+
+        def single(p):
+            return (f'<a class="entry" href="{html.escape(p["page"])}"><span class="name">{html.escape(p["title"])}</span>'
+                    + (f'<span class="by">by {html.escape(p["author"])}</span>' if p.get('author') else '')
+                    + f'<span class="count">{p["replays"]} replays</span>' + icon_rows(p) + '</a>')
+
+        def grouped(name, members):
+            members = sorted(members, key=lambda p: (p.get('group_order', 0), p['title']))
+            links = ''.join(f'<a class="sub" href="{html.escape(p["page"])}"><b>{html.escape(p.get("group_label") or p["title"])}</b>'
+                            f'<span>{p["replays"]} replays</span></a>' for p in members)
+            return (f'<details class="entry group"><summary><span class="name">{html.escape(name)}</span>'
+                    + (f'<span class="by">by {html.escape(members[0]["author"])}</span>' if members[0].get('author') else '')
+                    + f'<span class="count">{len(members)} tiers, {sum(p["replays"] for p in members)} replays</span>'
+                    + icon_rows(members[0]) + f'</summary><div class="subs">{links}</div></details>')
+
+        # Pages sharing a "group" within a category fold into one expandable entry (two clicks: open it, pick a page).
+        items = {}
+        for p in (p for p in pages if page_category(p) == heading):
+            key = ('g', p['group']) if p.get('group') else ('p', p['page'])
+            items.setdefault(key, []).append(p)
+        ordered = sorted(items.items(), key=lambda kv: max(p['recorded'] for p in kv[1]), reverse=True)
+        cards = ''.join(grouped(k[1], v) if k[0] == 'g' and len(v) > 1 else single(v[0]) for k, v in ordered)
         sections.append(f'<section><h2>{html.escape(heading)}</h2><div class="list">{cards}</div></section>')
     css = PAGE_CSS + (
         'h2{margin:28px 0 12px;font-size:18px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--accent)}'
         '.list{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}'
         '.entry{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;background:var(--card);border:1px solid var(--border);'
         'border-radius:var(--radius);padding:14px 18px;color:inherit;text-decoration:none;transition:border-color .15s}'
+        'details.group{display:block}details.group[open]{grid-column:1 / -1}'
+        'details.group>summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;cursor:pointer;list-style:none}'
+        'details.group>summary::-webkit-details-marker{display:none}'
+        'details.group>summary .name::after{content:"\\25B8";margin-left:8px;color:var(--accent)}'
+        'details.group[open]>summary .name::after{content:"\\25BE"}'
+        '.subs{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}'
+        '.sub{display:flex;flex-direction:column;gap:2px;padding:8px 14px;border:1px solid var(--border);border-radius:var(--radius);color:inherit;text-decoration:none}'
+        '.sub:hover{border-color:var(--accent)}.sub b{font-size:15px}.sub span{font-size:12px;color:var(--muted)}'
         '.entry:hover{border-color:var(--accent)}.entry .name{font-size:17px;font-weight:600;flex:1 1 100%}'
         '.entry .by,.entry .count{font-size:13px;color:var(--muted)}'
         '.entry .icons{flex:1 1 100%;display:flex;align-items:flex-start;gap:12px;margin-top:6px}'
