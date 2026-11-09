@@ -51,11 +51,13 @@
   "author": "Kharnage",
   "variant_labels": {
     "m1.txt": "100%",
-    "m1_461.txt": "461 out of 500"
+    "m1_461.txt": "461 out of 500",
+    "l2.txt": "100%",
+    "l2_400.txt": "400 out of 500"
   },
   "notice": {
     "icon": "SE_Currency_november_2026.png",
-    "before": "The characters shown will get you to the penultimate crate, letting you claim all of the ",
+    "before": "These lower levels (every other character stays the same) will get you to the penultimate crate, letting you claim all of the ",
     "highlight": "Skull Harvest",
     "color": "#d9432b",
     "after": " currency."
@@ -66,7 +68,9 @@
       "l1.txt",
       "l2.txt"
     ],
-    "text": "This is a 100% playthrough. A playthrough that gets you to the penultimate crate is shown as well, with its characters below."
+    "text": "This is a 100% playthrough.",
+    "split": true,
+    "low_label": "Non 100% - Penultimate Crate"
   },
   "bonuses_confirmed": [
     "l2.txt"

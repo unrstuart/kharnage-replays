@@ -61,7 +61,8 @@ def star_icons(star_level):
 
 # Look borrowed from tacticus-raidman.com's own theme tokens (dark zinc surfaces, faint white borders, blue accent,
 # Chakra Petch), read from its stylesheet - not from the rendered page.
-NOTICE_CSS = (".notice{margin:12px 0 0;max-width:960px;text-align:center;line-height:1.55;font-size:15px}"
+NOTICE_CSS = (".low-label{margin:0 0 10px;text-align:center;font-weight:700;letter-spacing:.06em;text-transform:uppercase;font-size:13px;color:var(--muted)}"
+              ".notice{margin:12px 0 0;max-width:960px;text-align:center;line-height:1.55;font-size:15px}"
               ".notice .hl{font-weight:700;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}"
               ".notice i{display:inline-block;width:24px;height:20px;margin-right:5px;vertical-align:-4px;"
               "background-size:contain;background-repeat:no-repeat;background-position:center}")
@@ -801,6 +802,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     boost = cfg.get('roster_boost') or {}
     lightning_warnings = []
     boost_seen = {}    # same, over the replays named in cfg['roster_boost']['replays'] (kept out of roster_seen)
+    low_label = ''
     top = cfg.get('roster_top') or {}   # {"replays": [...], "text": "..."}: those replays' characters get a box above the main roster
     top_seen = {}
     with open(csv_path, newline='') as f:
@@ -989,6 +991,20 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         roster_note = f'<p class="roster-note">\u2192 points to the {html.escape(boost_label.lower())} version of a character</p>'
     top_section = (f'<section class="roster top"><div class="team">{"".join(unit_html(u, *best_of(r)) for u, r in top_seen.items())}</div>'
                    + (f'<p class="intro">{html.escape(top["text"])}</p>' if top.get('text') else '') + '</section>') if top_seen else ''
+    if top.get('split') and top_seen:
+        # "split": the top box shows every character at the best levels over all replays (the full-marks run); the box below it,
+        # headed by top["low_label"], shows only the characters whose levels in the other replays are lower, at those levels.
+        everyone = {}
+        for unit, records in list(roster_seen.items()) + list(top_seen.items()):
+            everyone.setdefault(unit, []).extend(records)
+        top_section = (f'<section class="roster top"><div class="team">{"".join(unit_html(u, *best_of(r)) for u, r in everyone.items())}</div>'
+                       + (f'<p class="intro">{html.escape(top["text"])}</p>' if top.get('text') else '') + '</section>')
+        lower = [(u, best_of(r)) for u, r in roster_seen.items() if best_of(r) != best_of(everyone[u])]
+        roster_html = ''.join(unit_html(u, *stats) for u, stats in lower)
+        rows_needed, roster_style = 1, ''
+        low_label = f'<p class="low-label">{html.escape(top.get("low_label", ""))}</p>' if top.get('low_label') else ''
+        if not lower:
+            low_label = ''
     extra_section = (f'<section class="roster extra"><div class="team">{"".join(extra_parts)}</div>'
                      f'<p class="roster-note">{html.escape(extra.get("label", ""))}</p></section>') if extra_parts else ''
     high_first = descending(cfg)
@@ -1035,7 +1051,7 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         f'<style>{PAGE_CSS}{NOTICE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
         f'<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
         f'{top_section}'
-        f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{notice}{intro}</section>'
+        f'<section class="roster">{promo}{low_label}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{notice}{intro}</section>'
         f'{extra_section}'
         f'{tier_sections}</main></body></html>'
     )
