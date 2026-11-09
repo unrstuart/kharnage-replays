@@ -12,6 +12,7 @@ it instead if that fails).
 """
 import base64
 import csv
+import datetime
 import hashlib
 import io
 import gzip
@@ -61,6 +62,8 @@ def star_icons(star_level):
 
 # Look borrowed from tacticus-raidman.com's own theme tokens (dark zinc surfaces, faint white borders, blue accent,
 # Chakra Petch), read from its stylesheet - not from the rendered page.
+BANNER_CSS = (".banner{margin:0 0 20px;padding:12px 18px;border:1px solid var(--accent);border-radius:var(--radius);background:var(--card);font-size:17px;text-align:center}"
+              ".banner[hidden],.banner .copied[hidden]{display:none}.banner{cursor:pointer}.banner .pill{display:flex;width:fit-content;align-items:center;gap:10px;margin:8px auto 0;padding:2px 12px 2px 6px;vertical-align:middle;border:1px solid var(--border);border-radius:999px;background:rgba(255,255,255,.06);font-size:14px;font-weight:600}.banner .rw{display:inline-flex;align-items:center;gap:4px}.banner .sh{position:relative;display:inline-block;width:30px;height:27px}.banner .sh img{position:absolute}.banner .sh img:first-child{inset:0;width:100%;height:100%}.banner .sh .sp{width:18px;height:18px;left:6px;top:4.5px;border-radius:50%}.banner .rw>img{width:22px;height:22px;object-fit:contain}.banner .copied{color:var(--accent)}.banner b{color:var(--accent);letter-spacing:.06em}")
 PAGE_CSS = """
 :root{--bg:oklch(14.1% .005 285.8);--card:oklch(21% .006 285.9);--border:oklch(100% 0 0/.1);--fg:oklch(98.5% 0 0);
   --muted:oklch(70.5% .015 286);--accent:oklch(70% .17 255);--radius:.625rem}
@@ -971,13 +974,35 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
              f'<span class="promo-code" title="Click to select, then copy">{html.escape(cfg["promo_code"])}</span>'
              + (f'<span class="promo-note">{html.escape(cfg["promo_note"])}</span>' if cfg.get('promo_note') else '') + '</div>') if cfg.get('promo_code') else ''
     intro = f'<p class="intro">{html.escape(cfg["intro"])}</p>' if cfg.get('intro') else ''
+    # cfg["banner"]: {"text", "code"?, "until"}: a bar across the top that vanishes (checked in the visitor's browser) once the
+    # UTC time in "until" (e.g. "2026-11-16T00:00:00Z") has passed. It reads "<text><code>. Live Until <until>".
+    banner = ''
+    if cfg.get('banner'):
+        b = cfg['banner']
+        when = datetime.datetime.strptime(b['until'], '%Y-%m-%dT%H:%M:%SZ')
+        pills = ''
+        for r in b.get('rewards', []):   # [{"sprite": "stamina.png" | "portrait": "<unit id>" (shown on a shard), "label": "25 energy"}]
+            if r.get('portrait'):
+                frame, face = reward_sprite('ui_icon_character_shard_default.png'), portrait_file(r['portrait'])
+                face = face and reward_sprite(face)
+                icon = f'<span class="sh"><img src="{frame}" alt=""><img class="sp" src="{face}" alt=""></span>' if frame and face else ''
+            else:
+                src = reward_sprite(r['sprite'])
+                icon = f'<img src="{src}" alt="">' if src else ''
+            if not icon:
+                print('no sprite for banner reward:', r)
+            pills += f'<span class="rw">{icon}{html.escape(r["label"])}</span>'
+        pills = f'<span class="pill">{pills}</span>' if pills else ''
+        banner = (f'<div class="banner" hidden data-until="{b["until"]}" data-code="{html.escape(b.get("code", ""))}" title="Click to copy the code">{html.escape(b["text"])}<b>{html.escape(b.get("code", ""))}</b>. '
+                  f'Live Until <span class="until">{when:%B} {when.day}, {when.year} {when:%H:%M:%S} UTC</span> <span class="copied" hidden>(copied!)</span>{pills}</div>'
+                  '<script>document.querySelectorAll(".banner").forEach(function(b){if(Date.now()>=Date.parse(b.dataset.until)){b.remove();return}b.hidden=false;var u=b.querySelector(".until");try{u.textContent=new Date(b.dataset.until).toLocaleString(undefined,{dateStyle:"long",timeStyle:"long"})}catch(e){}b.addEventListener("click",function(){var c=b.dataset.code,m=b.querySelector(".copied");function ok(){m.hidden=false;setTimeout(function(){m.hidden=true},1500)}function fb(){var t=document.createElement("textarea");t.value=c;document.body.appendChild(t);t.select();try{if(document.execCommand("copy"))ok()}catch(e){}t.remove()}if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(c).then(ok,fb)}else fb()})})</script>')
     page = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">'
         f'<meta name="viewport" content="width=device-width, initial-scale=1"><title>{page_title}</title>'
         '<link rel="preconnect" href="https://fonts.googleapis.com">'
         '<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&display=swap">'
-        f'<style>{PAGE_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
-        f'<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
+        f'<style>{PAGE_CSS}{BANNER_CSS}{tier_css}{halo_css}</style></head><body><main{" class=rows" if layout == "rows" else ""}>'
+        f'{banner}<header><h1>{html.escape(cfg["title"])}{byline}</h1></header>'
         f'<section class="roster">{promo}<div class="team"{roster_style}>{roster_html}</div>{roster_note}{intro}</section>'
         f'{extra_section}'
         f'{tier_sections}</main></body></html>'
