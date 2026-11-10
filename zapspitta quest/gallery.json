@@ -73,8 +73,5 @@
     "text": "This is a 100% playthrough.",
     "split": true,
     "low_label": "Non 100% - Penultimate Crate"
-  },
-  "bonuses_confirmed": [
-    "l2.txt"
-  ]
+  }
 }
