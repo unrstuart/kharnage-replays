@@ -48,5 +48,11 @@
   ],
   "site_dir": "~/src/kharnage-replays/site",
   "page": "parasite-quest.html",
-  "author": "Kharnage"
+  "author": "Kharnage",
+  "variant_labels": {
+    "m1.txt": "100%",
+    "m1_200.txt": "200 out of 500",
+    "l2.txt": "100%",
+    "l2_486.txt": "486 out of 500"
+  }
 }
