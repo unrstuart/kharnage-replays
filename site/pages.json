@@ -231,6 +231,30 @@
   "replays": 18,
   "title": "Nubari Quest"
  },
+ "parasite-quest.html": {
+  "author": "Kharnage",
+  "category": "",
+  "group": "",
+  "group_label": "",
+  "group_order": 0,
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/f809948e20e5be6c.png\"></span><span class=\"cap\">&nbsp;</span></span>",
+    "<span class=\"ic\" title=\"M1\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgHpM002 (1/6)\"><img class=\"up-bg\" src=\"assets/img/5a5e3ca6ac6881bb.png\"><img class=\"up-icon\" src=\"assets/img/f2ae18841f1b92c8.png\"><img class=\"up-frame\" src=\"assets/img/15a69283f459768c.png\"></div></span><span class=\"cap\">M1</span></span>",
+    "<span class=\"ic\" title=\"L2\"><span class=\"art\"><div class=\"reward upgrade\" title=\"upgDmgL003 (3/4)\"><img class=\"up-bg\" src=\"assets/img/5a5e3ca6ac6881bb.png\"><img class=\"up-icon\" src=\"assets/img/a2005761f4e80290.png\"><img class=\"up-frame\" src=\"assets/img/4e602ad8e5918437.png\"></div></span><span class=\"cap\">L2</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Tyranids\" src=\"assets/img/22720a2a13b709ba.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"Genestealers\" src=\"assets/img/78691cea8a5b9103.png\">",
+    "<span class=\"vs\">vs.</span>",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BlackTemplars\" src=\"assets/img/a5e14e15d2a6e962.png\">"
+   ]
+  ],
+  "page": "parasite-quest.html",
+  "recorded": 639329801145022020,
+  "replays": 17,
+  "title": "Parasite of Mortrex Quest"
+ },
  "ramus-quest.html": {
   "author": "",
   "category": "",
