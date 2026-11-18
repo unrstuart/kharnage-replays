@@ -1,4 +1,28 @@
 {
+ "biovore-13-minimal-investment.html": {
+  "author": "Kharnage",
+  "category": "Incursion",
+  "group": "Biovore Incursion",
+  "group_label": "Tier 13 (Minimal Investment)",
+  "group_order": 13,
+  "icons": [
+   [
+    "<span class=\"ic\" title=\"\"><span class=\"art\"><img class=\"round\" src=\"assets/img/66d3d1b1360566ec.png\"></span><span class=\"cap\">&nbsp;</span></span>"
+   ],
+   [
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"BlackLegion\" src=\"assets/img/0bd7fedb6ab9ad21.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"DeathGuard\" src=\"assets/img/503f6bc146259714.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"ThousandSons\" src=\"assets/img/353a004c59c37781.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"WorldEaters\" src=\"assets/img/7c9c4cb5e6bd8606.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"EmperorsChildren\" src=\"assets/img/93048afd15444a8d.png\">",
+    "<img class=\"mini\" style=\"width:28px;height:28px\" title=\"TheLostAndTheDamned\" src=\"assets/img/0933aaf8dbf4ad53.png\">"
+   ]
+  ],
+  "page": "biovore-13-minimal-investment.html",
+  "recorded": 639324804364532330,
+  "replays": 17,
+  "title": "Biovore 13 (Minimal Investment)"
+ },
  "blood-angels-extremis.html": {
   "author": "Kharnage",
   "category": "Campaign Events - Extremis",

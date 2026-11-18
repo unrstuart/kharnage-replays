@@ -146,6 +146,15 @@ h1 .by{font-size:16px;font-weight:500;color:var(--muted);letter-spacing:0}
 .pic .pups i{width:18px;height:18px;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
 .card.powerups{grid-column:1 / -1;border:1.5px dashed #ffc107;background:rgba(255,193,7,.06);box-shadow:0 0 14px -6px #ffc107;align-items:center;gap:12px;padding:14px 20px}
 .card.powerups:hover{box-shadow:0 0 14px -6px #ffc107}
+.card.distractions{grid-column:1 / -1;border:1.5px dashed #e53935;background:rgba(229,57,53,.05)}
+.card.distractions:hover{box-shadow:0 0 14px -6px #e53935}
+.distract-for{font-size:13px;color:#9aa4b2;white-space:nowrap}
+.attempts{display:flex;flex-direction:column;gap:10px;padding-top:12px}
+.attempt{display:flex;align-items:center;gap:16px;color:var(--fg);text-decoration:none;border:1px solid var(--border);border-radius:10px;padding:8px 14px}
+.attempt:hover{border-color:#e53935}
+.attempt-n{flex:none;width:84px;font-size:12px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#ff8a80}
+.attempt .team{flex:1;justify-content:center}
+@media (max-width:540px){.attempt{flex-direction:column;gap:6px}.attempt-n{width:auto}}
 .token-badge{display:inline-flex;align-items:center;gap:5px;flex:none;white-space:nowrap;font-size:12px;font-weight:600;color:#ffc107;background:rgba(255,193,7,.1);border:1px solid #ffc107;border-radius:999px;padding:1px 10px 1px 4px}
 .token-badge i{width:20px;height:20px}
 .tier.cleanup{margin-top:48px;padding-top:24px;border-top:2px dashed #ffc107}
@@ -813,11 +822,23 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     # ({"<csv filename>": "label"}), which are different takes on the same battle and are all kept.
     variants = cfg.get('variant_labels', {})
     latest = {}
+    # cfg["distractions"] = {"label": "Havoc Distractions"}: replays that were not won are not collapsed into "latest per title".
+    # Every lost attempt at a battle (identical recordings counted once) goes into one card for that battle, ahead of the card for
+    # the win; the lost attempts' characters stay out of the roster.
+    distract_cfg = cfg.get('distractions') or {}
+    failed = {}          # title -> [replay indexes], oldest first
+    failed_content = set()
     for i, (row, data) in enumerate(zip(rows, replays)):
+        if distract_cfg and data.get('BattleResult', {}).get('EndReason') != 'PlayerWon':
+            content = hashlib.sha256(json.dumps(data['Messages'], sort_keys=True).encode()).hexdigest()
+            if content not in failed_content:
+                failed_content.add(content)
+                failed.setdefault(row['title'], []).append(i)
+            continue
         key = (row['title'], row['filename']) if row['filename'] in variants else (row['title'], None)
         if key not in latest or recorded_at(data) > recorded_at(replays[latest[key]]):
             latest[key] = i
-    skipped = len(rows) - len(latest)
+    skipped = len(rows) - len(latest) - sum(len(v) for v in failed.values())
     terms = load_terms(cfg.get('i2_path'))
     map_files = {}
     if battles and cfg.get('maps', True):
@@ -859,9 +880,11 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         # Power-ups: one taken at node N is held for every later battle, and shown as "taken" on the first one after N.
         alt = row['filename'] in alt_replays
         node = powerup_node(row['title']) if powerups else None
-        mine = [p for p in powerups if (p.get('token') == 'alt') == alt]
+        # alt_token "continues": true = the second token picked the run up where the first stopped, so every power-up taken so far is held.
+        continues = bool(alt_cfg.get('continues'))
+        mine = powerups if continues else [p for p in powerups if (p.get('token') == 'alt') == alt]
         held = [p for p in mine if p['node'] < node] if powerups else []
-        previous = max((n for n, a in shown_nodes if a == alt and n < node), default=-1) if powerups else -1
+        previous = max((n for n, a in shown_nodes if (continues or a == alt) and n < node), default=-1) if powerups else -1
         taken = [p for p in held if p['node'] > previous]
         imgs = [unit_html(unit, *stats, held=[p for p in held if p.get('unit') == unit]) for unit, *stats in replay_units]
         number = battle_number(cfg, battles, row['title'])
@@ -947,6 +970,26 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
         # The power-ups taken since the previous battle of the same run get a card of their own, just before this one.
         if taken:
             (alt_cards if alt else cards).append((number - .5, tier and tier[0], powerup_card(taken, alt)))
+    # One card per battle that was lost: every attempt's team, each linking to its own replay, just ahead of the battle's win.
+    for title, indexes in failed.items():
+        indexes.sort(key=lambda j: recorded_at(replays[j]))
+        alt = rows[indexes[0]]['filename'] in alt_replays
+        number = battle_number(cfg, battles, title)
+        source_battle = battles[source_index(cfg, title)] if battles else None
+        tier = tier_of(cfg, tiers, number, source_battle)
+        label = cfg.get('label', '{title} Battle {n}').format(
+            title=cfg['title'], n=number, tier=(tier[1].get('name') or '') if tier else '', k=(source_battle or {}).get('_pos', number))
+        attempts = ''.join(
+            f'<a class="attempt" href="{html.escape(rows[j]["url"] or "#")}"><span class="attempt-n">Attempt {k}</span>'
+            f'<div class="team">{"".join(unit_html(unit, *stats) for unit, *stats in player_units(replays[j]))}</div></a>'
+            for k, j in enumerate(indexes, 1))
+        count = f'{len(indexes)} failed attempt{"s" if len(indexes) > 1 else ""}'
+        (alt_cards if alt else cards).append((number - .25, tier and tier[0],
+            f'<div class="card distractions{" tiered tier-%d" % tier[0] if tier else ""}">'
+            f'<div class="card-head"><div class="head-left"><span class="card-title">{html.escape(distract_cfg.get("label", "Failed attempts"))}'
+            f'</span><span class="distract-for">{html.escape(label)}</span>{token_badge if alt else ""}</div>'
+            f'<span class="warn" title="None of these attempts won the battle">✖ {count}</span></div>'
+            f'<div class="attempts">{attempts}</div></div>'))
     # The best each unit reached in any replay shown, in the order the units first appear.
     # With cfg["roster_boost"] = {"replays": [...], "label": "Super juiced"}: the roster shows each unit's normal best, and
     # for units that are better in the boosted replays, an arrow to that boosted version. Units that only appear boosted
@@ -1080,9 +1123,12 @@ def build_page(cfg, replays_dir, assets_dir, csv_path, out_dir):
     )
     cfg['_index_icons'] = index_icon_fragments(cfg, battles, portrait_file, reward_html, reward_sprite, sprites_dir, sprite_files,
                                            os.path.join(assets_dir, 'text_assets', 'GameConfig'), out_dir)
-    battle_count = sum(1 for _, _, card in cards + alt_cards if not card.startswith('<div class="card powerups"'))
+    battle_count = (sum(1 for _, _, card in cards + alt_cards if not card.startswith(('<div class="card powerups"', '<div class="card distractions')))
+                    + sum(len(v) for v in failed.values()))
     cfg['_meta'] = {'replays': battle_count, 'recorded': max((recorded_at(replays[i]) for i in latest.values()), default=0)}
     print(f'{battle_count} replays ({skipped} earlier attempts at the same battle left out)')
+    if failed:
+        print(f'{sum(len(v) for v in failed.values())} lost attempts grouped into {len(failed)} "{distract_cfg.get("label", "Failed attempts")}" cards')
     for warning_text in lightning_warnings:
         print('WARNING not a lightning victory:', warning_text)
     if any(not row['url'] for row in rows):

@@ -1,0 +1,54 @@
+{
+  "title": "Biovore 13 (Minimal Investment)",
+  "author": "Kharnage",
+  "intro": "A minimal-investment clear of Biovore tier 13. The first Hit Boost goes on Laviscus, Life Steal goes on Khârn, and the Summon power-ups are taken wherever they are offered. Most battles are lost first with low units: every lost attempt at a battle is grouped into one \"Havoc Distractions\" card, followed by the card for the clear. When you run out of low units you need a second token to keep advancing.",
+  "replays_dir": "~/src/kharnage-replays/biovore/13 minimal investment",
+  "csv": "~/src/kharnage-replays/biovore/13 minimal investment/replays.csv",
+  "assets_dir": "~/src/datamine_tacticus/extracted_assets_144_marketing",
+  "i2_path": "~/src/datamine_tacticus/I2Languages_en.1.43.json",
+  "source": {
+    "type": "mow_event",
+    "id": "tyranBiovore",
+    "tier": 12
+  },
+  "battle_index_map": {
+    "MachinesOfWar nodeOrBattleIndex: 0": 0,
+    "MachinesOfWar nodeOrBattleIndex: 3": 2,
+    "MachinesOfWar nodeOrBattleIndex: 7": 3,
+    "MachinesOfWar nodeOrBattleIndex: 9": 5,
+    "MachinesOfWar nodeOrBattleIndex: 17": 8,
+    "MachinesOfWar nodeOrBattleIndex: 25": 11,
+    "MachinesOfWar nodeOrBattleIndex: 27": 12,
+    "MachinesOfWar nodeOrBattleIndex: 31": 14
+  },
+  "number_keys": ["battleId"],
+  "powerups": [
+    {"id": "Regeneration_01", "node": 2},
+    {"id": "Summons_02", "node": 5, "name": "Summon: Havoc"},
+    {"id": "HitBoost_01", "unit": "emperExultant", "node": 10},
+    {"id": "Summons_02", "node": 13, "name": "Summon: Havoc"},
+    {"id": "LifeSteal_01", "unit": "worldKharn", "node": 20},
+    {"id": "Regeneration_01", "node": 22},
+    {"id": "HitBoost_01", "unit": "worldKharn", "node": 28}
+  ],
+  "distractions": {"label": "Havoc Distractions"},
+  "alt_token": {
+    "replays": ["11.txt", "12.txt", "13.txt", "14.txt", "15.txt", "16.txt", "17.txt"],
+    "label": "Second token",
+    "heading": "Second token",
+    "continues": true,
+    "badges": false,
+    "note": "The low units ran out, so these battles were played on a second token. It carried on from where the first token stopped, with the same power-ups."
+  },
+  "label": "Battle {n}",
+  "index_icons": [
+    {"unit": "tyranBiovore"},
+    {"factions": "playable", "row": 2}
+  ],
+  "site_dir": "~/src/kharnage-replays/site",
+  "page": "biovore-13-minimal-investment.html",
+  "category": "Incursion",
+  "group": "Biovore Incursion",
+  "group_label": "Tier 13 (Minimal Investment)",
+  "group_order": 13
+}
